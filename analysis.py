@@ -10,8 +10,9 @@ import seaborn as sns
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
 
 # %% [markdown]
 # ## Overview Dataset
@@ -137,12 +138,18 @@ lr_model.score(X_test, y_test)
 # ## Results
 
 # %%
-y_pred = lr_model.predict(X_test)
+# Compare Linear regression with other models
 
-r2 = r2_score(y_test, y_pred)
-mse = mean_squared_error(y_test, y_pred)
+models = {
+    "Linear": LinearRegression(),
+    "Ridge": Ridge(alpha=1.0),
+    "Lasso": Lasso(alpha=0.1),
+    "Random Forest": RandomForestRegressor(n_estimators=100, max_depth=5, random_state=42)
+}
 
-print(f"R²: {r2:.3f}")
-print(f"MSE: {mse:.3f}")
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print(f"{name} → R2: {r2_score(y_test, y_pred):.3f}, RMSE: {mean_squared_error(y_test, y_pred, squared=False):.2f}")
 
 
